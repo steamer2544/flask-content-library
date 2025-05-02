@@ -1,3 +1,4 @@
+# Use the official Python image with Debian (includes apt-get)
 FROM python:3.9-buster
 
 # Set the working directory
