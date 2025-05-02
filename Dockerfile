@@ -19,9 +19,10 @@ COPY . .
 # Set environment variables
 ENV FLASK_APP=app
 ENV FLASK_RUN_HOST=0.0.0.0
+ENV FLASK_ENV=development
 
 # Expose the port the app runs on
 EXPOSE 5000
 
 # Run the seed script and then start the application
-CMD ["sh", "-c", "python app/seed.py && flask run"]
+CMD ["flask", "run"]

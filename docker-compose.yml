@@ -10,4 +10,4 @@ services:
     environment:
       - FLASK_ENV=development
       - FLASK_APP=app
-    command: sh -c "python app/seed.py && flask run"
+    command: flask run
