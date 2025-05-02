@@ -24,3 +24,7 @@ Thumbs.db
 
 # Ignore Docker-related files
 docker-compose.override.yml
+
+# Ignore environment variables file
+*.env
+*.env.dev
