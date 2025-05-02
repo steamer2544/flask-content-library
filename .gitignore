@@ -1,1 +1,23 @@
-.venv
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.env
+
+# Virtual Environment
+.venv/
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# Logs and Databases
+*.log
+*.sqlite3
+db.sqlite3
+instance/
+
+# OS Files
+.DS_Store
+Thumbs.db
