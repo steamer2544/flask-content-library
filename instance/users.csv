@@ -1,0 +1,2 @@
+id,code,first_name,last_name,email,tel,username,password,status,created_by,created_at,updated_by,updated_at,deleted_by,deleted_at
+c5c8b096504f4aba8245aff9e4719649,,Admin,Admin,,"",admin,scrypt:32768:8:1$65xtGcUsM7VtkwTO$cd4612cfabef4ad1c2729551beeb7817ed772922b2b15ace819a0233600d7292be37f8fb4dd9c4ebff454e39f1aeb627323b78f15e3b17876bf9962d4538032e,1,,"2025-04-29 19:51:48.891923",,"2025-04-29 19:51:48.892214",,
