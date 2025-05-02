@@ -14,6 +14,3 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code
 COPY . .
-
-# Run the seed script and then start the application
-CMD ["flask", "run"]
