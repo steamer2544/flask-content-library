@@ -1,7 +1,11 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from app import app  # Absolute import for app
+from app.models import db, User, Role, RoleUser
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash
-from app import app  # ต้อง import Flask app ของคุณ
-from models import db, User, Role, RoleUser
 import uuid
 
 with app.app_context():

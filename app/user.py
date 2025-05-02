@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
-from auth import token_required
-from models import User, Role, RoleUser
-from app import db
+from .auth import token_required
+from .models import db, User, Role, RoleUser
 from sqlalchemy import desc, asc
 from uuid import UUID
 from datetime import datetime, timezone

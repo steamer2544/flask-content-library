@@ -1,7 +1,7 @@
 from flask import Flask
-from models import db
-from auth import auth_bp
-from user import user_bp
+from .models import db
+from .auth import auth_bp
+from .user import user_bp
 from datetime import timedelta
 
 app = Flask(__name__)

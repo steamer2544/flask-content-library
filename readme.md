@@ -55,10 +55,36 @@ This project is a Flask-based API for managing users and roles. It includes feat
    The application will be available at http://127.0.0.1:5000.
 
 # Seeding Data
-The seed.py script initializes the database with the following:
+The `seed.py` script initializes the database with the following:
 
-- An admin user with the username admin and password Asdlkj123.
+- An admin user with the username `admin` and password `Asdlkj123`.
 - An "Administrator" role linked to the admin user.
+
+# Docker
+
+1. Rebuild the Docker Image: Run the following command to rebuild the image:
+
+   ```bash
+   docker-compose build
+   ```
+
+2. Run the Application: Start the application using:
+
+   ```bash
+   docker-compose up
+   ```
+
+3. Access the Application: The Flask app will be accessible at:
+   
+   http://localhost:5000.
+
+4. Seed the Database (Optional): If you need to seed the database manually, run:
+
+   ```bash
+   docker-compose run flask-api python app/seed.py
+   ```
+
+   This will initialize the database with the admin user and role.
 
 # License
 This project is licensed under the MIT License.
