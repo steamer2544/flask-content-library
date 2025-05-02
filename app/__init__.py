@@ -1,15 +1,21 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask
 from .models import db
 from .auth import auth_bp
 from .user import user_bp
 from datetime import timedelta
 
+# Load environment variables dynamically
+env_file = os.getenv('FLASK_ENV_FILE', '.env.dev')
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), f'../{env_file}'))
+
 app = Flask(__name__)
-app.secret_key = 'secret-key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'secret-key'
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
+app.secret_key = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASEURI')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS') == 'True'
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 1)))
 
 db.init_app(app)
 
