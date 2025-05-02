@@ -14,5 +14,5 @@ services:
       - FLASK_RUN_HOST=0.0.0.0
       - FLASK_RUN_PORT=5001
       - FLASK_APP=app
-      
-    command: flask run # ป้องกัน Flask รันที่ localhost:5000 โดยค่าเริ่มต้น ภายใน container และ 0.0.0.0 เพื่อรับ request จากภายนอก container
+
+    command: flask run
