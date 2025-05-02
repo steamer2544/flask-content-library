@@ -84,7 +84,7 @@ def serialize_role(role):
         "updated_at": role.updated_at.isoformat() if role.updated_at else None,
         "deleted_by": str(role.deleted_by) if role.deleted_by else None,
         "deleted_at": role.deleted_at.isoformat() if role.deleted_at else None,
-        "slug": None  # เพิ่ม field slug ตามที่คุณอยากให้ response มี
+        "slug": None
     }
 
 def serialize_user(user, roles):

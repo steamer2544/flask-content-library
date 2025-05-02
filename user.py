@@ -44,7 +44,7 @@ def serialize_user(user, roles):
     }
 
 
-@user_bp.route('/users', methods=['GET'])
+@user_bp.route('/', methods=['GET'])
 @token_required
 def list_users(current_user):
     # Query params
@@ -107,7 +107,7 @@ def list_users(current_user):
         }
     }), 200
 
-@user_bp.route("/users", methods=["POST"])
+@user_bp.route("/", methods=["POST"])
 @token_required
 def create_user(current_user):
     data = request.get_json()
@@ -175,7 +175,7 @@ def create_user(current_user):
         "message": "User created successfully."
     }), 200
 
-@user_bp.route("/users/<uuid:user_id>", methods=["PUT"])
+@user_bp.route("/<uuid:user_id>", methods=["PUT"])
 @token_required
 def update_user(current_user, user_id):
     data = request.get_json()
@@ -235,7 +235,7 @@ def update_user(current_user, user_id):
     }), 200
 
 
-@user_bp.route("/users/<uuid:user_id>", methods=["DELETE"])
+@user_bp.route("/<uuid:user_id>", methods=["DELETE"])
 @token_required
 def delete_user(current_user, user_id):
     user = User.query.filter_by(id=user_id, deleted_at=None).first()
@@ -261,7 +261,7 @@ def delete_user(current_user, user_id):
     }), 200
 
 
-@user_bp.route("/users/<uuid:user_id>", methods=["GET"])
+@user_bp.route("/<uuid:user_id>", methods=["GET"])
 @token_required
 def get_user_by_id(current_user, user_id):
     user = User.query.filter_by(id=user_id, deleted_at=None).first()

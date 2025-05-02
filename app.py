@@ -1,6 +1,6 @@
 from flask import Flask
 from models import db
-from auth import auth
+from auth import auth_bp
 from user import user_bp
 from datetime import timedelta
 
@@ -13,7 +13,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
 
 db.init_app(app)
 
-app.register_blueprint(auth, url_prefix='/auth')
+app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(user_bp, url_prefix='/user')
 
 
