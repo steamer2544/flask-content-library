@@ -71,7 +71,7 @@ The `seed.py` script initializes the database with the following:
 2. Run the Application: Start the application using:
 
    ```bash
-   docker-compose up
+   docker-compose up -d
    ```
 
 3. Access the Application: The Flask app will be accessible at:
