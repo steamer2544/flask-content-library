@@ -4,10 +4,11 @@ services:
   flask-api:
     build: .
     ports:
-      - "5000:5000"
+      - "5001:5001"
     volumes:
       - .:/app
     environment:
       - FLASK_ENV=development
+      - FLASK_RUN_HOST=0.0.0.0
       - FLASK_APP=app
-    command: flask run
+    command: flask run --host=0.0.0.0 --port=5001
