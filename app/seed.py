@@ -12,7 +12,7 @@ with app.app_context():
     db.drop_all()
     db.create_all()
 
-    # 1. Create admin user
+    # Create admin user
     user_id = uuid.uuid4()
     admin_user = User(
         id=user_id,
@@ -28,7 +28,7 @@ with app.app_context():
         updated_at=datetime.now(timezone.utc)
     )
 
-    # 2. Create role "Administrator"
+    # Create role "Administrator"
     role_id = uuid.uuid4()
     admin_role = Role(
         id=role_id,
@@ -38,7 +38,7 @@ with app.app_context():
         updated_at=datetime.now(timezone.utc)
     )
 
-    # 3. Link user with role
+    # Link user with role
     role_user = RoleUser(
         id=uuid.uuid4(),
         user_id=user_id,
