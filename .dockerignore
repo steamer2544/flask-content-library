@@ -26,5 +26,5 @@ Thumbs.db
 docker-compose.override.yml
 
 # Ignore environment variables file
-*.env
-*.env.dev
+.env
+.env.dev

@@ -76,12 +76,16 @@ The `seed.py` script initializes the database with the following:
 
 3. Access the Application: The Flask app will be accessible at:
    
-   http://localhost:5000.
+   http://localhost:5001.
 
 4. Seed the Database (Optional): If you need to seed the database manually, run:
 
    ```bash
    docker-compose run flask-api python app/seed.py
+   ```
+   in docker deskop
+   ```bash
+   python app/seed.py
    ```
 
    This will initialize the database with the admin user and role.
