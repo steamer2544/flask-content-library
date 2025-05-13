@@ -7,13 +7,14 @@ from .user import user_bp
 from datetime import timedelta
 
 # Load environment variables dynamically
-env_file = os.getenv('FLASK_ENV_FILE', '.env.dev')
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), f'../{env_file}'))
+# env_file = os.getenv('FLASK_ENV_FILE', '.env.dev')
+# load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), f'../{env_file}'))
 
 app = Flask(__name__)
+
 app.secret_key = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS') == 'True'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.getenv('SQLALCHEMY_TRACK_MODIFICATIONS', 'False') == 'True'
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=int(os.getenv('JWT_ACCESS_TOKEN_EXPIRES', 1)))
 

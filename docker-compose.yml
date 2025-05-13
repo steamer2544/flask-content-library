@@ -3,14 +3,20 @@ version: '3.8'
 services:
   flask-api:
     build: .
-    env_file:
-      - .env.dev
+    # env_file:
+    #   - .env.dev
     ports:
       - "5001:5001"
     environment:
-      - FLASK_ENV=development
-      - FLASK_RUN_HOST=0.0.0.0
-      - FLASK_RUN_PORT=5001
-      - FLASK_APP=app
+      SECRET_KEY: secret-key
+      DATABASE_URI: sqlite:///db.sqlite3
+      SQLALCHEMY_TRACK_MODIFICATIONS: "False" # Disable track modifications for performance
+      JWT_SECRET_KEY: secret-key
+      JWT_ACCESS_TOKEN_EXPIRES: 1
+
+      FLASK_ENV: development
+      FLASK_RUN_HOST: 0.0.0.0
+      FLASK_RUN_PORT: 5001
+      FLASK_APP: app
 
     command: flask run

@@ -52,7 +52,7 @@ This project is a Flask-based API for managing users and roles. It includes feat
    ```bash
    python app.py
    ```
-   The application will be available at http://127.0.0.1:5000.
+   The application will be available at http://127.0.0.1:5001.
 
 # Seeding Data
 The `seed.py` script initializes the database with the following:

@@ -8,7 +8,7 @@ import os
 
 auth_bp = Blueprint('auth', __name__)
 
-SECRET_KEY = os.environ.get('SECRET_KEY', 'secret-key')
+SECRET_KEY = os.environ['SECRET_KEY']
 
 
 def token_required(f):
