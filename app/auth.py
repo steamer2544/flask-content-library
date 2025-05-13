@@ -15,7 +15,6 @@ def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-        # ดึง token จาก header
         if 'Authorization' in request.headers:
             auth_header = request.headers['Authorization']
             if auth_header.startswith("Bearer "):
@@ -26,7 +25,6 @@ def token_required(f):
 
         try:
             data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-            # แนบ user id หรือ data ที่ decode แล้วเข้าไปใน kwargs
             kwargs['current_user'] = data
         except jwt.ExpiredSignatureError:
             return jsonify({"status": "error", "message": "Token has expired!"}), 401
@@ -49,20 +47,18 @@ def login():
     if not user or not check_password_hash(user.password, password):
         return jsonify({"status": "fail", "message": "Invalid credentials"}), 401
 
-    # Query roles
     role_ids = db.session.query(RoleUser.role_id).filter_by(user_id=user.id).all()
     role_ids = [r[0] for r in role_ids]
     roles = Role.query.filter(Role.id.in_(role_ids)).all()
 
     payload = {
-        'id': str(user.id),
+        'id': user.id,
         'username': user.username,
         'iat': datetime.now(timezone.utc),
         'exp': datetime.now(timezone.utc) + timedelta(days=1)
     }
 
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
-
 
     return jsonify({
         "status": "success",

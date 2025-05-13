@@ -1,4 +1,4 @@
-# Flask API Project
+# Flask Content Library
 
 This project is a Flask-based API for managing users and roles. It includes features such as user authentication, role-based access control, and CRUD operations for users.
 
