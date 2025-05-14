@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 import uuid
 from werkzeug.security import generate_password_hash
 
-user_bp = Blueprint('user', __name__)
+user_bp = Blueprint('api_user', __name__)
 
 def serialize_media(medium):
     return {

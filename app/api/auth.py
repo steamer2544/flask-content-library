@@ -6,7 +6,7 @@ import jwt
 from datetime import datetime, timezone, timedelta
 import os
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('api_auth', __name__)
 
 SECRET_KEY = os.environ['SECRET_KEY']
 

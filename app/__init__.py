@@ -4,8 +4,6 @@ from .models.base import db
 from .api.auth import auth_bp
 from .api.user import user_bp
 from .api.media import media_bp
-# frontend
-from .view.controller.index import index_bp
 from datetime import timedelta
 
 
@@ -24,7 +22,10 @@ app.register_blueprint(user_bp, url_prefix='/api_user')
 app.register_blueprint(media_bp, url_prefix='/api_media')
 
 # frontend
-app.register_blueprint(index_bp, url_prefix='/')
+from .view.controllers import index
+from .view.controllers import user
+app.register_blueprint(index.bp, url_prefix='/')
+app.register_blueprint(user.bp, url_prefix='/user')
 
 
 with app.app_context():

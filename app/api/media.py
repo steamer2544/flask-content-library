@@ -2,7 +2,7 @@ from flask import Blueprint, request
 from app.models.media import Media
 from sqlalchemy import desc, asc
 
-media_bp = Blueprint('media', __name__)
+media_bp = Blueprint('api_media', __name__)
 
 @media_bp.route("/", methods=["GET"])
 def list_media():
