@@ -9,6 +9,7 @@ class ApproveStatus(enum.Enum):
     REJECTED = "rejected"
 
 class MediaType(enum.Enum):
+    ARTICLE = "article"
     IMAGE = "image"
     VIDEO = "video"
     AUDIO = "audio"

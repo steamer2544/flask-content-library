@@ -17,15 +17,15 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=int(os.getenv('JWT_ACCES
 
 db.init_app(app)
 
-app.register_blueprint(auth_bp, url_prefix='/api_auth')
-app.register_blueprint(user_bp, url_prefix='/api_user')
-app.register_blueprint(media_bp, url_prefix='/api_media')
+app.register_blueprint(auth_bp, url_prefix='/api/auth')
+app.register_blueprint(user_bp, url_prefix='/api/user')
+app.register_blueprint(media_bp, url_prefix='/api/media')
 
 # frontend
 from .view.controllers import index
 from .view.controllers import user
 app.register_blueprint(index.bp, url_prefix='/')
-app.register_blueprint(user.bp, url_prefix='/user')
+app.register_blueprint(user.bp)
 
 
 with app.app_context():
