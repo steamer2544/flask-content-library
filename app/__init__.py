@@ -1,9 +1,9 @@
 import os
-from dotenv import load_dotenv
 from flask import Flask
 from .models.base import db
 from .api.auth import auth_bp
 from .api.user import user_bp
+from .api.media import media_bp
 from datetime import timedelta
 
 
@@ -19,6 +19,7 @@ db.init_app(app)
 
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(user_bp, url_prefix='/user')
+app.register_blueprint(media_bp, url_prefix='/media')
 
 
 with app.app_context():
