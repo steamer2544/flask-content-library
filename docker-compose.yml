@@ -6,7 +6,7 @@ services:
     # env_file:
     #   - .env.dev
     ports:
-      - "5001:5001"
+      - "5000:5000"
     environment:
       SECRET_KEY: secret-key
       DATABASE_URI: sqlite:///db.sqlite3
@@ -16,7 +16,7 @@ services:
 
       FLASK_ENV: development
       FLASK_RUN_HOST: 0.0.0.0
-      FLASK_RUN_PORT: 5001
+      FLASK_RUN_PORT: 5000
       FLASK_APP: app
 
     command: flask run

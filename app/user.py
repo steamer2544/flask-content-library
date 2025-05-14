@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from .auth import token_required
-from .models import db, User, Role, RoleUser
+from .models.base import db
+from .models.user import User
+from .models.media import Media
 from sqlalchemy import desc, asc
 from uuid import UUID
 from datetime import datetime, timezone
@@ -9,37 +11,38 @@ from werkzeug.security import generate_password_hash
 
 user_bp = Blueprint('user', __name__)
 
-def serialize_role(role):
+def serialize_media(medium):
     return {
-        "id": str(role.id),
-        "name": role.name,
-        "status": role.status,
-        "created_by": str(role.created_by) if role.created_by else None,
-        "created_at": role.created_at.isoformat() if role.created_at else None,
-        "updated_by": str(role.updated_by) if role.updated_by else None,
-        "updated_at": role.updated_at.isoformat() if role.updated_at else None,
-        "deleted_by": str(role.deleted_by) if role.deleted_by else None,
-        "deleted_at": role.deleted_at.isoformat() if role.deleted_at else None,
-        "slug": role.slug,
+        "id": str(medium.id),
+        "name": medium.name,
+        "status": medium.status,
+        "created_by": str(medium.created_by) if medium.created_by else None,
+        "created_at": medium.created_at.isoformat() if medium.created_at else None,
+        "updated_by": str(medium.updated_by) if medium.updated_by else None,
+        "updated_at": medium.updated_at.isoformat() if medium.updated_at else None,
+        "deleted_by": str(medium.deleted_by) if medium.deleted_by else None,
+        "deleted_at": medium.deleted_at.isoformat() if medium.deleted_at else None,
+        # "slug": medium.slug,
     }
 
-def serialize_user(user, roles):
+def serialize_user(user, media):
     return {
         "id": str(user.id),
-        "code": user.code,
+        # "code": user.code,
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
         "tel": user.tel,
         "username": user.username,
         "status": user.status,
+        "role": user.role.value,
         "created_by": str(user.created_by) if user.created_by else None,
         "created_at": user.created_at.isoformat() if user.created_at else None,
         "updated_by": str(user.updated_by) if user.updated_by else None,
         "updated_at": user.updated_at.isoformat() if user.updated_at else None,
         "deleted_by": str(user.deleted_by) if user.deleted_by else None,
         "deleted_at": user.deleted_at.isoformat() if user.deleted_at else None,
-        "roles": [serialize_role(role) for role in roles]
+        "media": [serialize_media(medium) for medium in media]
     }
 
 
@@ -55,7 +58,7 @@ def list_users(current_user):
 
     # Base query
     query = User.query.filter(User.deleted_at == None)
-
+    
     if keyword:
         search = f"%{keyword}%"
         query = query.filter(
@@ -80,10 +83,11 @@ def list_users(current_user):
     # Build user list
     user_list = []
     for user in users:
-        role_ids = db.session.query(RoleUser.role_id).filter_by(user_id=user.id).all()
-        role_ids = [r[0] for r in role_ids]
-        roles = Role.query.filter(Role.id.in_(role_ids)).all()
-        user_list.append(serialize_user(user, roles))
+        # media_i = db.session.query(Media.role_id).filter_by(user_id=user.id).all()
+        # role_ids = [r[0] for r in role_ids]
+        # media = Media.query.filter(user.id.in_(role_ids)).all()
+        media = Media.query.filter(Media.user_id==user.id).all()
+        user_list.append(serialize_user(user, media))
 
     # Metadata
     metadata = {
@@ -123,13 +127,14 @@ def create_user(current_user):
 
     new_user = User(
         id=uuid.uuid4() ,
-        code=None,
+        # code=None,
         first_name=data['first_name'],
         last_name=data['last_name'],
         username=data['username'],
         password=generate_password_hash(data['password']),
         status=data['status'],
         email=data['email'],
+        school=None,
         tel=None,
         # created_by=current_user["id"],
         created_by = uuid.UUID(current_user["id"]),
@@ -141,13 +146,13 @@ def create_user(current_user):
     )
 
     # ผูก roles จาก role_ids
-    role_ids = data.get('role_ids', [])
-    try:
-        role_uuids = [uuid.UUID(rid) for rid in role_ids]
-    except ValueError:
-        return jsonify({"status": "error", "message": "Invalid role ID format."}), 400
-    roles = Role.query.filter(Role.id.in_(role_uuids)).all()
-    new_user.roles = roles
+    # role_ids = data.get('role_ids', [])
+    # try:
+    #     role_uuids = [uuid.UUID(rid) for rid in role_ids]
+    # except ValueError:
+    #     return jsonify({"status": "error", "message": "Invalid role ID format."}), 400
+    # roles = Role.query.filter(Role.id.in_(role_uuids)).all()
+    # new_user.roles = roles
 
     db.session.add(new_user)
     db.session.commit()
@@ -156,12 +161,13 @@ def create_user(current_user):
         "status": "success",
         "data": {
             "id": new_user.id,
-            "code": new_user.code,
+            # "code": new_user.code,
             "first_name": new_user.first_name,
             "last_name": new_user.last_name,
             "email": new_user.email,
             "tel": new_user.tel,
             "username": new_user.username,
+            "role": new_user.role.value,
             "status": new_user.status,
             "created_by": new_user.created_by,
             "created_at": new_user.created_at.isoformat(),
@@ -169,7 +175,7 @@ def create_user(current_user):
             "updated_at": new_user.updated_at.isoformat(),
             "deleted_by": new_user.deleted_by,
             "deleted_at": new_user.deleted_at,
-            "roles": [role.id for role in new_user.roles]
+            # "roles": [role.id for role in new_user.roles]
         },
         "message": "User created successfully."
     }), 200
@@ -191,10 +197,10 @@ def update_user(current_user, user_id):
     user.updated_by = uuid.UUID(current_user["id"])
     user.updated_at = datetime.now(timezone.utc)
 
-    # อัปเดต Roles
-    if "role_ids" in data:
-        roles = db.session.query(Role).filter(Role.id.in_([UUID(rid) for rid in data["role_ids"]])).all()
-        user.roles = roles
+    # # อัปเดต Roles
+    # if "role_ids" in data:
+    #     roles = db.session.query(Role).filter(Role.id.in_([UUID(rid) for rid in data["role_ids"]])).all()
+    #     user.roles = roles
 
     db.session.commit()
 
@@ -204,12 +210,13 @@ def update_user(current_user, user_id):
         "data": {
             "user": {
                 "id": str(user.id),
-                "code": user.code,
+                # "code": user.code,
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "email": user.email,
                 "tel": user.tel,
                 "username": user.username,
+                "role": user.role.value,
                 "status": user.status,
                 "created_by": str(user.created_by) if user.created_by else None,
                 "created_at": user.created_at.isoformat() if user.created_at else None,
@@ -217,18 +224,18 @@ def update_user(current_user, user_id):
                 "updated_at": user.updated_at.isoformat() if user.updated_at else None,
                 "deleted_by": str(user.deleted_by) if user.deleted_by else None,
                 "deleted_at": user.deleted_at.isoformat() if user.deleted_at else None,
-                "roles": [{
-                    "id": str(role.id),
-                    "name": role.name,
-                    "status": role.status,
-                    "created_by": str(role.created_by) if role.created_by else None,
-                    "created_at": role.created_at.isoformat() if role.created_at else None,
-                    "updated_by": str(role.updated_by) if role.updated_by else None,
-                    "updated_at": role.updated_at.isoformat() if role.updated_at else None,
-                    "deleted_by": str(role.deleted_by) if role.deleted_by else None,
-                    "deleted_at": role.deleted_at.isoformat() if role.deleted_at else None,
-                    "slug": role.slug
-                } for role in user.roles]
+                # "roles": [{
+                #     "id": str(role.id),
+                #     "name": role.name,
+                #     "status": role.status,
+                #     "created_by": str(role.created_by) if role.created_by else None,
+                #     "created_at": role.created_at.isoformat() if role.created_at else None,
+                #     "updated_by": str(role.updated_by) if role.updated_by else None,
+                #     "updated_at": role.updated_at.isoformat() if role.updated_at else None,
+                #     "deleted_by": str(role.deleted_by) if role.deleted_by else None,
+                #     "deleted_at": role.deleted_at.isoformat() if role.deleted_at else None,
+                #     "slug": role.slug
+                # } for role in user.roles]
             }
         }
     }), 200
@@ -248,8 +255,9 @@ def delete_user(current_user, user_id):
     user.updated_at = datetime.now(timezone.utc)
     user.updated_by = uuid.UUID(current_user["id"])
 
-    # ลบความสัมพันธ์กับ roles ใน role_user ด้วย (soft ด้วยการลบ record ไปเลย)
-    RoleUser.query.filter_by(user_id=user.id).delete()
+    # ใชช้ดับที่อื่นได้มั้งนะ 
+    # # ลบความสัมพันธ์กับ roles ใน role_user ด้วย (soft ด้วยการลบ record ไปเลย)
+    # RoleUser.query.filter_by(user_id=user.id).delete()
 
     db.session.commit()
 
@@ -268,20 +276,21 @@ def get_user_by_id(current_user, user_id):
     if not user:
         return jsonify({"status": "error", "message": "User not found."}), 404
 
-    # ดึง roles
-    role_ids = db.session.query(RoleUser.role_id).filter_by(user_id=user.id).all()
-    role_ids = [r[0] for r in role_ids]
-    roles = Role.query.filter(Role.id.in_(role_ids)).all()
+    # # ดึง roles
+    # role_ids = db.session.query(RoleUser.role_id).filter_by(user_id=user.id).all()
+    # role_ids = [r[0] for r in role_ids]
+    # roles = Role.query.filter(Role.id.in_(role_ids)).all()
 
     # แปลงเป็น dict
     user_data = {
         "id": str(user.id),
-        "code": user.code,
+        # "code": user.code,
         "first_name": user.first_name,
         "last_name": user.last_name,
         "email": user.email,
         "tel": user.tel or "",
         "username": user.username,
+        "role": user.role.value,
         "status": user.status,
         "created_by": str(user.created_by) if user.created_by else None,
         "created_at": user.created_at.isoformat() if user.created_at else None,
@@ -289,21 +298,21 @@ def get_user_by_id(current_user, user_id):
         "updated_at": user.updated_at.isoformat() if user.updated_at else None,
         "deleted_by": str(user.deleted_by) if user.deleted_by else None,
         "deleted_at": user.deleted_at.isoformat() if user.deleted_at else None,
-        "roles": [
-            {
-                "id": str(role.id),
-                "name": role.name,
-                "status": role.status,
-                "created_by": str(role.created_by) if role.created_by else None,
-                "created_at": role.created_at.isoformat() if role.created_at else None,
-                "updated_by": str(role.updated_by) if role.updated_by else None,
-                "updated_at": role.updated_at.isoformat() if role.updated_at else None,
-                "deleted_by": str(role.deleted_by) if role.deleted_by else None,
-                "deleted_at": role.deleted_at.isoformat() if role.deleted_at else None,
-                "slug": role.slug
-            }
-            for role in roles
-        ]
+        # "roles": [
+        #     {
+        #         "id": str(role.id),
+        #         "name": role.name,
+        #         "status": role.status,
+        #         "created_by": str(role.created_by) if role.created_by else None,
+        #         "created_at": role.created_at.isoformat() if role.created_at else None,
+        #         "updated_by": str(role.updated_by) if role.updated_by else None,
+        #         "updated_at": role.updated_at.isoformat() if role.updated_at else None,
+        #         "deleted_by": str(role.deleted_by) if role.deleted_by else None,
+        #         "deleted_at": role.deleted_at.isoformat() if role.deleted_at else None,
+        #         "slug": role.slug
+        #     }
+        #     for role in roles
+        # ]
     }
 
     return jsonify({

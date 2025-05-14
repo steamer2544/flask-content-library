@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask
-from .models import db
+from .models.base import db
 from .auth import auth_bp
 from .user import user_bp
 from datetime import timedelta
