@@ -116,7 +116,7 @@ def create_user(current_user):
     data = request.get_json()
 
     # ตรวจสอบ field ที่จำเป็น
-    required_fields = ['first_name', 'last_name', 'username', 'password', 'status', 'email', 'role_ids']
+    required_fields = ['first_name', 'last_name', 'username', 'password', 'status', 'email']
     for field in required_fields:
         if field not in data:
             return jsonify({"status": "error", "message": f"Missing field: {field}"}), 400
@@ -126,7 +126,7 @@ def create_user(current_user):
         return jsonify({"status": "error", "message": "Username already exists"}), 400
 
     new_user = User(
-        id=uuid.uuid4() ,
+        # id=uuid.uuid4() ,
         # code=None,
         first_name=data['first_name'],
         last_name=data['last_name'],
@@ -137,7 +137,7 @@ def create_user(current_user):
         school=None,
         tel=None,
         # created_by=current_user["id"],
-        created_by = uuid.UUID(current_user["id"]),
+        created_by = current_user["id"],
         created_at=datetime.now(timezone.utc),
         updated_by=None,
         updated_at=datetime.now(timezone.utc),
@@ -180,7 +180,7 @@ def create_user(current_user):
         "message": "User created successfully."
     }), 200
 
-@user_bp.route("/<uuid:user_id>", methods=["PUT"])
+@user_bp.route("/<int:user_id>", methods=["PUT"])
 @token_required
 def update_user(current_user, user_id):
     data = request.get_json()
@@ -194,7 +194,7 @@ def update_user(current_user, user_id):
     user.last_name = data.get("last_name", user.last_name)
     user.email = data.get("email", user.email)
     user.status = data.get("status", user.status)
-    user.updated_by = uuid.UUID(current_user["id"])
+    user.updated_by = current_user["id"]
     user.updated_at = datetime.now(timezone.utc)
 
     # # อัปเดต Roles
@@ -241,7 +241,7 @@ def update_user(current_user, user_id):
     }), 200
 
 
-@user_bp.route("/<uuid:user_id>", methods=["DELETE"])
+@user_bp.route("/<int:user_id>", methods=["DELETE"])
 @token_required
 def delete_user(current_user, user_id):
     user = User.query.filter_by(id=user_id, deleted_at=None).first()
@@ -251,9 +251,9 @@ def delete_user(current_user, user_id):
 
     # Soft delete
     user.deleted_at = datetime.now(timezone.utc)
-    user.deleted_by = uuid.UUID(current_user["id"])
+    user.deleted_by = current_user["id"]
     user.updated_at = datetime.now(timezone.utc)
-    user.updated_by = uuid.UUID(current_user["id"])
+    user.updated_by = current_user["id"]
 
     # ใชช้ดับที่อื่นได้มั้งนะ 
     # # ลบความสัมพันธ์กับ roles ใน role_user ด้วย (soft ด้วยการลบ record ไปเลย)
@@ -268,7 +268,7 @@ def delete_user(current_user, user_id):
     }), 200
 
 
-@user_bp.route("/<uuid:user_id>", methods=["GET"])
+@user_bp.route("/<int:user_id>", methods=["GET"])
 @token_required
 def get_user_by_id(current_user, user_id):
     user = User.query.filter_by(id=user_id, deleted_at=None).first()
