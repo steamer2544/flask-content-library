@@ -2,13 +2,10 @@ import os
 from dotenv import load_dotenv
 from flask import Flask
 from .models.base import db
-from .auth import auth_bp
-from .user import user_bp
+from .api.auth import auth_bp
+from .api.user import user_bp
 from datetime import timedelta
 
-# Load environment variables dynamically
-# env_file = os.getenv('FLASK_ENV_FILE', '.env.dev')
-# load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), f'../{env_file}'))
 
 app = Flask(__name__)
 

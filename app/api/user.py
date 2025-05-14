@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
 from .auth import token_required
-from .models.base import db
-from .models.user import User
-from .models.media import Media
+from app.models.base import db
+from app.models.user import User
+from app.models.media import Media
 from sqlalchemy import desc, asc
 from uuid import UUID
 from datetime import datetime, timezone

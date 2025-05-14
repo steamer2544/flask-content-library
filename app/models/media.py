@@ -26,7 +26,6 @@ class Media(db.Model):
 
     # ความสัมพันธ์กับ User
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # user = db.relationship('User', backref='media')
     user = db.relationship('User', backref=db.backref('media', lazy=True), foreign_keys=[user_id])
 
     # สถานะการอนุมัติ
