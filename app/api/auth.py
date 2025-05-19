@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from functools import wraps
 from werkzeug.security import check_password_hash
 from app.models.user import db, User
@@ -10,7 +10,6 @@ auth_bp = Blueprint('api_auth', __name__)
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
-
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -19,6 +18,8 @@ def token_required(f):
             auth_header = request.headers['Authorization']
             if auth_header.startswith("Bearer "):
                 token = auth_header.split(" ")[1]
+        elif 'access_token' in request.cookies:
+            token = request.cookies['access_token']
 
         if not token:
             return jsonify({"status": "error", "message": "Token is missing!"}), 401
@@ -46,11 +47,7 @@ def login():
 
     if not user or not check_password_hash(user.password, password):
         return jsonify({"status": "fail", "message": "Invalid credentials"}), 401
-
-    # role_ids = db.session.query(RoleUser.role_id).filter_by(user_id=user.id).all()
-    # role_ids = [r[0] for r in role_ids]
-    # roles = Role.query.filter(Role.id.in_(role_ids)).all()
-
+    
     payload = {
         'id': user.id,
         'username': user.username,
@@ -60,13 +57,31 @@ def login():
 
     token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
 
-    return jsonify({
+    response = make_response(jsonify({
         "status": "success",
         "data": {
             "user": serialize_user(user),
             "token": token
         }
-    }), 200
+    }), 200)
+
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=True,  # ใช้กับ HTTPS เท่านั้นใน production
+        # samesite='Lax'  # หรือ 'Strict' ถ้า API และ frontend อยู่บนโดเมนเดียวกัน 
+        samesite='Strict'  # หรือ 'Strict' ถ้า API และ frontend อยู่บนโดเมนเดียวกัน 
+    )
+    return response
+
+    # return jsonify({
+    #     "status": "success",
+    #     "data": {
+    #         "user": serialize_user(user),
+    #         "token": token
+    #     }
+    # }), 200
 
 
 # def serialize_role(role):

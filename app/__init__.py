@@ -24,8 +24,10 @@ app.register_blueprint(media_bp, url_prefix='/api/media')
 # frontend
 from .view.controllers import index
 from .view.controllers import user
+from .view.controllers import auth
 app.register_blueprint(index.bp, url_prefix='/')
 app.register_blueprint(user.bp)
+app.register_blueprint(auth.bp)
 
 
 with app.app_context():

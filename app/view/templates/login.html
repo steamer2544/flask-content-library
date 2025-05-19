@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+<form id="login-form">
+  <div>
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+  </div>
+  <div>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+  </div>
+  <button type="submit">Login</button>
+</form>
+{# 
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %} #}
+    
+</body>
+
+<script>
+document.getElementById('login-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password }),
+        credentials: 'include'  // 🔸 สำคัญ! เพื่อให้ browser ส่ง cookie ไปด้วย
+    });
+
+    const result = await response.json();
+    
+    if (result.status === "success") {
+        alert("Login successful! Token: " + result.data.token);
+        // บันทึก token ถ้าจำเป็น เช่น localStorage.setItem('token', result.data.token);
+        window.location.href = "/user";
+    } else {
+        alert("Login failed: " + result.message);
+    }
+});
+</script>
+
+</html>

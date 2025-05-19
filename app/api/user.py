@@ -1,5 +1,9 @@
 from flask import Blueprint, request, jsonify
 from .auth import token_required
+from app.services.user import (
+    user_list,
+    build_pagination_query
+)
 from app.models.base import db
 from app.models.user import User
 from app.models.media import Media
@@ -48,7 +52,7 @@ def serialize_user(user, media):
 
 @user_bp.route('/', methods=['GET'])
 @token_required
-def list_users(current_user):
+def get_user_list(current_user):
     # Query params
     page_no = int(request.args.get('pageNo', 1))
     page_limit = int(request.args.get('pageLimit', 10))
@@ -68,39 +72,12 @@ def list_users(current_user):
             (User.email.ilike(search))
         )
 
-    # Sorting
-    order_col = getattr(User, order_by, User.created_at)
-    if order_direction.lower() == 'desc':
-        query = query.order_by(desc(order_col))
-    else:
-        query = query.order_by(asc(order_col))
+    metadata, users = build_pagination_query(query, page_no, page_limit, order_by, order_direction)
 
-    # Pagination
-    total = query.count()
-    offset = (page_no - 1) * page_limit
-    users = query.offset(offset).limit(page_limit).all()
-
-    # Build user list
     user_list = []
     for user in users:
-        # media_i = db.session.query(Media.role_id).filter_by(user_id=user.id).all()
-        # role_ids = [r[0] for r in role_ids]
-        # media = Media.query.filter(user.id.in_(role_ids)).all()
         media = Media.query.filter(Media.user_id==user.id).all()
         user_list.append(serialize_user(user, media))
-
-    # Metadata
-    metadata = {
-        "orderBy": order_by,
-        "orderDirection": order_direction,
-        "previousPage": page_no - 1 if page_no > 1 else None,
-        "pageNo": page_no,
-        "pageLimit": page_limit,
-        "nextPage": page_no + 1 if offset + page_limit < total else None,
-        "total": total,
-        "from": offset + 1 if total > 0 else 0,
-        "to": offset + len(users)
-    }
 
     return jsonify({
         "status": "success",
