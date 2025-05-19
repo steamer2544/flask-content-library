@@ -54,6 +54,10 @@ This project is a Flask-based API for managing users and roles. It includes feat
    ```
    The application will be available at http://127.0.0.1:5001.
 
+6. For test the api
+
+   add key Accept : application/json in header
+
 # Seeding Data
 The `seed.py` script initializes the database with the following:
 

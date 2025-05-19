@@ -37,33 +37,33 @@ def serialize_user(user, media):
         "media": [serialize_media(medium) for medium in media]
     }
 
-def user_list(page_no, page_limit, order_by, order_direction, keyword):
-    # Base query
-    query = User.query.filter(User.deleted_at == None)
-    if keyword:
-        search = f"%{keyword}%"
-        query = query.filter(
-            (User.username.ilike(search)) |
-            (User.first_name.ilike(search)) |
-            (User.last_name.ilike(search)) |
-            (User.email.ilike(search))
-        )
+# def user_list(page_no, page_limit, order_by, order_direction, keyword):
+#     # Base query
+#     query = User.query.filter(User.deleted_at == None)
+#     if keyword:
+#         search = f"%{keyword}%"
+#         query = query.filter(
+#             (User.username.ilike(search)) |
+#             (User.first_name.ilike(search)) |
+#             (User.last_name.ilike(search)) |
+#             (User.email.ilike(search))
+#         )
 
-    metadata, users = build_pagination_query(query, page_no, page_limit, order_by, order_direction)
+#     metadata, users = build_pagination_query(query, page_no, page_limit, order_by, order_direction)
 
-    # Build user list
-    user_list = []
-    for user in users:
-        media = Media.query.filter(Media.user_id==user.id).all()
-        user_list.append(serialize_user(user, media))
+#     # Build user list
+#     user_list = []
+#     for user in users:
+#         media = Media.query.filter(Media.user_id==user.id).all()
+#         user_list.append(serialize_user(user, media))
 
-    return jsonify({
-        "status": "success",
-        "data": {
-            "metadata": metadata,
-            "data": user_list
-        }
-    })
+#     return jsonify({
+#         "status": "success",
+#         "data": {
+#             "metadata": metadata,
+#             "data": user_list
+#         }
+#     })
 
 # waiting to put in utils/pagination.py
 def build_pagination_query(query, page_no, page_limit, order_by, order_direction):
